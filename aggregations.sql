@@ -116,3 +116,13 @@ FROM orders
 JOIN accounts
 ON accounts.id = orders.account_id
 GROUP BY accounts.name;
+
+
+FROM web_events web
+JOIN accounts acc
+ON web.account_id = acc.id
+JOIN sales_reps sp
+ON acc.sales_rep_id = sp.id
+GROUP BY sp.name,web.channel
+ORDER BY web.channel,count desc
+;
