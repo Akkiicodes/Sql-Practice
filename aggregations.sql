@@ -57,3 +57,62 @@ FROM (SELECT total_amt_usd
       LIMIT 3457) AS Table1
 ORDER BY total_amt_usd DESC
 LIMIT 2;
+
+
+SELECT acc.name,ord.occurred_at
+FROM orders ord
+JOIN accounts acc
+ON ord.account_id = acc.id
+ORDER BY ord.occurred_at;
+
+SELECT acc.name,SUM(total_amt_usd) as SUM
+FROM orders ord
+JOIN accounts acc
+ON ord.account_id = acc.id
+GROUP BY acc.name
+ORDER BY SUM DESC;
+
+SELECT acc.name,web.channel,web.occurred_at as recent_order_date
+FROM web_events web
+JOIN accounts acc
+ON web.account_id = acc.id
+ORDER BY recent_order_date DESC
+;
+
+SELECT web.channel,count(*)
+FROM web_events web
+GROUP BY web.channel 
+;
+
+SELECT acc.name,min(ord.total_amt_usd)
+FROM orders ord
+JOIN accounts acc
+ON ord.account_id = acc.id
+GROUP BY acc.name 
+;
+
+SELECT reg.name,count(sp.name) as CNT
+FROM sales_reps sp
+JOIN region reg
+ON sp.region_id = reg.id
+GROUP BY reg.name 
+ORDER BY CNT
+;
+
+SELECT accounts.name,
+ROUND(AVG(standard_qty),2) AS std_avg, 
+ROUND(AVG(gloss_qty),2) AS gloss_avg,
+ROUND(AVG(poster_qty),2) AS pos_avg
+FROM orders
+JOIN accounts
+ON accounts.id = orders.account_id
+GROUP BY accounts.name;
+
+SELECT accounts.name,
+ROUND(AVG(standard_amt_usd),2) AS std_avg, 
+ROUND(AVG(gloss_amt_usd),2) AS gloss_avg,
+ROUND(AVG(poster_amt_usd),2) AS pos_avg
+FROM orders
+JOIN accounts
+ON accounts.id = orders.account_id
+GROUP BY accounts.name;
