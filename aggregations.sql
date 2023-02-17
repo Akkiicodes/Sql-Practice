@@ -174,3 +174,56 @@ ON reg.id = sp.region_id
 GROUP BY reg.name,web.channel
 ORDER BY web.channel,count desc
 ;
+
+--How many of the sales reps have more than 5 accounts that they manage?
+
+select sales_rep_id,count(accounts.id)
+from accounts
+group by sales_rep_id
+having count(accounts.id) > 5;
+
+-- How many accounts have more than 20 orders?
+select count(*) 
+from 
+(select count(orders.account_id)
+from orders
+group by orders.account_id
+having count(orders.account_id) > 20) AS T1;
+
+--Which account has the most orders?
+select orders.account_id,count(orders.account_id)
+from orders
+group by orders.account_id
+having count(orders.account_id) > 20
+order by count(orders.account_id) desc
+limit 1;
+
+--Which accounts spent more than 30,000 usd total across all orders?
+select orders.account_id,SUM(orders.total_amt_usd)
+from orders
+group by orders.account_id
+having SUM(orders.total_amt_usd) > 30000
+order by SUM(orders.total_amt_usd) desc;
+
+--Which accounts spent less than 1,000 usd total across all orders?
+select orders.account_id,SUM(orders.total_amt_usd)
+from orders
+group by orders.account_id
+having SUM(orders.total_amt_usd) < 1000
+order by SUM(orders.total_amt_usd) desc;
+
+--Which account has spent the most with us?
+
+select orders.account_id,SUM(orders.total_amt_usd)
+from orders
+group by orders.account_id
+order by SUM(orders.total_amt_usd) desc
+limit 1;
+
+--Which account has spent the least with us?
+
+select orders.account_id,SUM(orders.total_amt_usd)
+from orders
+group by orders.account_id
+order by SUM(orders.total_amt_usd) 
+limit 1;
