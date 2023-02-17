@@ -227,3 +227,27 @@ from orders
 group by orders.account_id
 order by SUM(orders.total_amt_usd) 
 limit 1;
+
+--Which accounts used facebook as a channel to contact customers more than 6 times?
+select we.account_id,we.channel, count(we.channel)
+from web_events we
+group by we.channel,we.account_id
+having count(we.channel) > 6 ;
+
+--Which account used facebook most as a channel?
+select we.account_id,we.channel, count(we.channel)
+from web_events we
+group by we.channel,we.account_id
+having count(we.channel) > 6 
+order by count(we.channel) desc
+limit 1;
+
+--Find the sales in terms of total dollars for all orders in each year, ordered from greatest to least. Do you notice any trends in the yearly sales totals?
+
+SELECT DATE_PART('year',occurred_at),SUM(total_amt_usd)
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+-- Which month did Parch & Posey have the greatest sales in terms of total dollars? Are all months evenly represented by the dataset?
+
