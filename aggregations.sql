@@ -352,4 +352,40 @@ ORDER BY 3 DESC;
 --We would like to identify top performing sales reps, which are sales reps associated with more than 200 orders. Create a table with the sales rep name, the total number of orders, 
 --and a column with top or not depending on if they have more than 200 orders. Place the top sales people first in your final table.
 
+SELECT sales_reps.name,count(orders.id) ,
+CASE 
+	WHEN Count(orders.id) >= 200
+    THEN 'Top'
+	ELSE 'Not' 
+END 
+AS total_size
+FROM orders
+JOIN accounts
+ON accounts.id = orders.account_id
+JOIN sales_reps
+ON sales_reps.id = accounts.sales_rep_id
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+--
+
+SELECT sales_reps.name,count(orders.id),SUM(orders.total_amt_usd), 
+CASE 
+	WHEN Count(orders.id) >= 200 OR SUM(orders.total_amt_usd) > 750000
+    THEN 'Top'
+    WHEN (Count(orders.id) >= 150 AND Count(orders.id) < 200) OR SUM(orders.total_amt_usd) > 500000
+	THEN 'Mid'
+	ELSE 'Low' 
+END 
+AS total_size
+FROM orders
+JOIN accounts
+ON accounts.id = orders.account_id
+JOIN sales_reps
+ON sales_reps.id = accounts.sales_rep_id
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
 
