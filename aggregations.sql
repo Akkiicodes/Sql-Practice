@@ -278,6 +278,7 @@ JOIN accounts
 on accounts.id = orders.account_id
 where accounts.name = 'Walmart'
 GROUP BY 1,2,3
-ORDER BY 4 DESC;
+ORDER BY 4 DESC
+LIMIT 1;
 
 -- 
