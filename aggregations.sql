@@ -251,3 +251,33 @@ ORDER BY 2 DESC;
 
 -- Which month did Parch & Posey have the greatest sales in terms of total dollars? Are all months evenly represented by the dataset?
 
+SELECT DATE_PART('month',occurred_at),SUM(total_amt_usd)
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--Which year did Parch & Posey have the greatest sales in terms of total number of orders? Are all years evenly represented by the dataset?
+
+SELECT DATE_PART('year',occurred_at),count(*)
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+-- Which month did Parch & Posey have the greatest sales in terms of total number of orders? Are all months evenly represented by the dataset?
+
+SELECT DATE_PART('month',occurred_at),count(*)
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--In which month of which year did Walmart spend the most on gloss paper in terms of dollars?
+
+SELECT DATE_PART('year',occurred_at) Y,DATE_PART('month',occurred_at) M,accounts.name,SUM(orders.gloss_amt_usd)
+FROM orders
+JOIN accounts
+on accounts.id = orders.account_id
+where accounts.name = 'Walmart'
+GROUP BY 1,2,3
+ORDER BY 4 DESC;
+
+-- 
