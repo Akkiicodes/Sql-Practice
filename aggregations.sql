@@ -281,4 +281,75 @@ GROUP BY 1,2,3
 ORDER BY 4 DESC
 LIMIT 1;
 
--- 
+-- Write a query to display for each order, the account ID, total amount of the order, and the level of the order 
+-- ‘Large’ or ’Small’ - depending on if the order is $3000 or more, or smaller than $3000.
+
+
+SELECT account_id,SUM(total_amt_usd),
+CASE 
+	WHEN SUM(total_amt_usd) > 3000 
+           THEN 'Large' 
+	ELSE 'Small' 
+END 
+AS order_size
+FROM orders
+GROUP BY account_id;
+
+-- Write a query to display the number of orders in each of three categories, based on the total number of items in each order.
+-- The three categories are: 'At Least 2000', 'Between 1000 and 2000' and 'Less than 1000'.
+
+SELECT account_id,SUM(total),
+CASE 
+	WHEN SUM(total) >= 2000 
+    THEN 'At Least 2000'
+    WHEN SUM(total) >= 1000 AND SUM(total)< 2000 
+    THEN 'Between 1000 and 2000'
+	ELSE 'Less than 1000' 
+END 
+AS total_size
+FROM orders
+GROUP BY account_id;
+
+-- We would like to understand 3 different levels of customers based on the amount associated with their purchases. The top level includes anyone with a Lifetime Value (total sales of all orders) greater than 200,000 usd. The second level is between 200,000 and 100,000 usd. The lowest level is anyone under 100,000 usd. Provide a table that includes the level associated with each account. 
+--You should provide the account name, the total sales of all orders for the customer, and the level. Order with the top spending customers listed first.
+
+SELECT orders.account_id,accounts.name,SUM(orders.total_amt_usd),
+CASE 
+	WHEN SUM(orders.total_amt_usd) >= 200000 
+    THEN 'Top'
+    WHEN SUM(orders.total_amt_usd) >= 100000 AND SUM(orders.total_amt_usd)< 200000 
+    THEN 'Middle'
+	ELSE 'Low' 
+END 
+AS total_size
+FROM orders
+JOIN accounts
+ON orders.account_id = accounts.id
+GROUP BY orders.account_id,accounts.name
+ORDER BY 3 DESC;
+
+--We would now like to perform a similar calculation to the first, but we want to obtain the total amount spent by customers only in 2016 and 2017. 
+--Keep the same levels as in the previous question. Order with the top spending customers listed first
+
+
+SELECT orders.account_id,accounts.name,SUM(orders.total_amt_usd),
+CASE 
+	WHEN SUM(orders.total_amt_usd) >= 200000 
+    THEN 'At Least 200000'
+    WHEN SUM(orders.total_amt_usd) >= 100000 AND SUM(orders.total_amt_usd)< 200000 
+    THEN 'Between 100000 and 200000'
+	ELSE 'Less than 100000' 
+END 
+AS total_size
+FROM orders
+JOIN accounts
+ON orders.account_id = accounts.id
+WHERE DATE_PART('year',orders.occurred_at) IN (2016,2017)
+GROUP BY orders.account_id,accounts.name
+ORDER BY 3 DESC;
+
+
+--We would like to identify top performing sales reps, which are sales reps associated with more than 200 orders. Create a table with the sales rep name, the total number of orders, 
+--and a column with top or not depending on if they have more than 200 orders. Place the top sales people first in your final table.
+
+
