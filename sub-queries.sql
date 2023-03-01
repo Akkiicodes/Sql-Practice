@@ -77,3 +77,28 @@ having account_id = (SELECT id from
 						ORDER BY 3 DESC
 						LIMIT 1) t1
 					);
+
+
+WITH t1 AS (SELECT sp.region_id RID,sp.name SNAME, SUM(o.total_amt_usd)TUSD
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		JOIN sales_reps sp
+		ON a.sales_rep_id = sp.id
+		GROUP BY sp.region_id,sp.name
+		ORDER BY TUSD DESC),
+
+t2 AS (SELECT t1.RID,MAX(t1.TUSD) MUSD
+	from t1
+	GROUP BY 1) 
+
+SELECT t1.RID ,t1.SNAME,t1.TUSD
+from t1
+join t2
+on t1.rid = t2.rid and t1.tusd = t2.musd
+;
+
+
+
+
+
