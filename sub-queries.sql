@@ -165,3 +165,25 @@ SELECT count(T3.account_name)
 FROM T3
 WHERE T3.total_qty > (SELECT MAX(tot_qty)
        FROM T1);
+       
+--For the customer that spent the most (in total over their lifetime as a customer) total_amt_usd, how many web_events did they have for each channel?
+
+WITH 
+T1 AS (SELECT a.name account_name, SUM(o.total_amt_usd) sum_total_amt_usd
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		GROUP BY 1
+		ORDER BY 2 DESC
+		limit 1),
+		
+T2 AS (SELECT a.name account_name, w.channel,COUNT(occurred_at) event_count
+		FROM web_events w
+		JOIN accounts a
+		ON w.account_id = a.id
+		GROUP BY 1,2)
+		
+SELECT T2.* from T2
+		JOIN T1 
+		ON T1.account_name = T2.account_name
+ORDER BY 3 DESC;
