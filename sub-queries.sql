@@ -79,6 +79,8 @@ having account_id = (SELECT id from
 					);
 
 
+--Provide the name of the sales_rep in each region with the largest amount of total_amt_usd sales
+
 WITH t1 AS (SELECT sp.region_id RID,sp.name SNAME, SUM(o.total_amt_usd)TUSD
 		FROM orders o
 		JOIN accounts a
@@ -98,7 +100,68 @@ join t2
 on t1.rid = t2.rid and t1.tusd = t2.musd
 ;
 
+--For the region with the largest sales total_amt_usd, how many total orders were placed?
 
+WITH T1 AS (SELECT sp.region_id RID, SUM(o.total_amt_usd) TUSD
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		JOIN sales_reps sp
+		ON a.sales_rep_id = sp.id
+		GROUP BY sp.region_id
+		ORDER BY TUSD DESC),
+        
+T2 AS (SELECT sp.region_id, COUNT(o.total) OT
+        	FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		JOIN sales_reps sp
+		ON a.sales_rep_id = sp.id
+		GROUP BY sp.region_id)
 
+SELECT  T1.RID,T1.TUSD,T2.OT
+FROM T1
+JOIN T2
+ON T1.RID = T2.region_id
+ORDER BY 2 DESC LIMIT 1;
+        
+;
 
+--For the account that purchased the most (in total over their lifetime as a customer) standard_qty paper, how many accounts still had more in total purchases?
 
+WITH
+T1 AS (SELECT a.name account_name, SUM(o.standard_qty) std_ord_qty, SUM(o.total) std_ord_qty
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		GROUP BY 1
+		ORDER BY 2 DESC),
+T3 AS (SELECT a.name account_name, SUM(o.total) total_qty
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		GROUP BY 1
+		ORDER BY 2 DESC)
+SELECT count(T3.account_name)
+FROM T3
+WHERE T3.total_qty > (SELECT MAX(std_ord_qty)
+       FROM T1);
+       
+WITH
+T1 AS (SELECT a.name account_name, SUM(o.standard_qty) std_ord_qty, SUM(o.total) tot_qty
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		GROUP BY 1
+		ORDER BY 2 DESC
+		limit 1),
+T3 AS (SELECT a.name account_name, SUM(o.total) total_qty
+		FROM orders o
+		JOIN accounts a
+		ON o.account_id = a.id
+		GROUP BY 1
+		ORDER BY 2 DESC)
+SELECT count(T3.account_name)
+FROM T3
+WHERE T3.total_qty > (SELECT MAX(tot_qty)
+       FROM T1);
