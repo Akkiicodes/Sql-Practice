@@ -67,3 +67,11 @@ SELECT
 standard_amt_usd,
 SUM(standard_amt_usd) OVER ( ORDER BY occurred_at) as running_total
 FROM orders;
+
+-- quartile function
+
+SELECT
+account_id,occurred_at,standard_qty,
+NTILE(4) OVER (PARTITION BY standard_qty ORDER BY account_id) AS Quartile
+FROM orders;
+
