@@ -53,3 +53,17 @@ WITH t1 AS (
  FROM accounts)
 SELECT first_name, last_name, CONCAT(first_name, '.', last_name, '@', name, '.com'), LEFT(LOWER(first_name), 1) || RIGHT(LOWER(first_name), 1) || LEFT(LOWER(last_name), 1) || RIGHT(LOWER(last_name), 1) || LENGTH(first_name) || LENGTH(last_name) || REPLACE(UPPER(name), ' ', '')
 FROM t1;
+
+-- change date format to std sql format
+
+SELECT
+(SUBSTR(date,7,4) || '-' || SUBSTR(date,1,2) || '-' || SUBSTR(date,4,2))::date 
+FROM
+sf_crime_data;
+
+-- window & running total
+
+SELECT
+standard_amt_usd,
+SUM(standard_amt_usd) OVER ( ORDER BY occurred_at) as running_total
+FROM orders;
